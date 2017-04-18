@@ -49,6 +49,7 @@ this file and include it in basic-server.js so that it actually works.
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
 var allMessages = []
+var currentId = 0
 
 var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
@@ -57,9 +58,19 @@ var requestHandler = function(request, response) {
    
     var headers = defaultCorsHeaders;
 
-    headers['Content-Type'] = 'plain/text';
+    headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
     responseMessage = "Error. Try again."
+    response.end(responseMessage); 
+  }
+
+  if (request.method === "OPTIONS") {
+    var statusCode = 200;
+    var headers = defaultCorsHeaders;
+
+    headers['Content-Type'] = 'application/json';
+    response.writeHead(statusCode, headers);
+    responseMessage = "You're good bruh."
     response.end(responseMessage); 
   }
   else if (request.method === "GET") {
@@ -72,7 +83,7 @@ var requestHandler = function(request, response) {
     responseMessage = JSON.stringify(obj);
     var headers = defaultCorsHeaders;
 
-    headers['Content-Type'] = 'plain/text';
+    headers['Content-Type'] = 'application/json';
 
     response.writeHead(statusCode, headers);
 
@@ -93,6 +104,7 @@ var requestHandler = function(request, response) {
    });
    request.on('end', function(data) {
     var parseBody = JSON.parse(body);
+    parseBody.objectId = currentId++
     allMessages.push(parseBody)
    });
 
@@ -103,7 +115,7 @@ var requestHandler = function(request, response) {
     responseMessage = JSON.stringify(obj);
 
     var headers = defaultCorsHeaders;
-    headers['Content-Type'] = 'plain/text';
+    headers['Content-Type'] = 'application/json';
 
     response.writeHead(statusCode, headers);
 
