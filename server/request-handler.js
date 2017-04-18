@@ -52,7 +52,17 @@ var allMessages = []
 
 var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-  if (request.method === "GET") {
+  if (request.url.indexOf('/classes/messages') < 0) {
+    var statusCode = 404;
+   
+    var headers = defaultCorsHeaders;
+
+    headers['Content-Type'] = 'plain/text';
+    response.writeHead(statusCode, headers);
+    responseMessage = "Error. Try again."
+    response.end(responseMessage); 
+  }
+  else if (request.method === "GET") {
     var statusCode = 200;
 
     var obj = {
@@ -69,7 +79,7 @@ var requestHandler = function(request, response) {
     response.end(responseMessage);
   }
 
-  if (request.method === "POST") {
+  else if (request.method === "POST") {
     var statusCode = 201;
     // if (allMessages[request.url] === undefined) {
     //   allMessages[request.url] = ([JSON.parse(request.data)])
@@ -99,6 +109,8 @@ var requestHandler = function(request, response) {
 
     response.end(responseMessage);
   }
+
+
 };
 
 var defaultCorsHeaders = {
